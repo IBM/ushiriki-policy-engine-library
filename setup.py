@@ -1,0 +1,13 @@
+
+#!/usr/bin/env python
+
+from setuptools import setup, find_packages
+
+setup(name='ushiriki-policy-engine-library',
+      version='1.0',
+      description='Python Langauge User facing library for accessing the Ushiriki Policy Engine webservice API',
+      author='Ushiriki Policy Engine Library Developers',
+      author_email='n/a@.com',
+      url='https://github.com/IBM/ushiriki-policy-engine-library',
+      packages=find_packages(),
+)
