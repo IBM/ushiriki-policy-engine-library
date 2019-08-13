@@ -38,7 +38,6 @@ class ChallengeEnvironment():
         action (list): Temporary data storage for action.
         labels (list): Sequence of classes that an action can be categorized in for each state.
         rewards (list): Memory for past rewards which have been received.
-
         
         """
 
@@ -62,7 +61,7 @@ class ChallengeEnvironment():
 
         self.actionDimension = 2
         self.policyDimension = 5
-        self._baseuri =  baseuri+"/kdd19/"+type
+        self._baseuri =  baseuri+"/kdd19/"+type if type is not "" else baseuri+"/kdd19"
         self.userId = userID
         self._experimentCount = experimentCount
         self.experimentsRemaining = self._experimentCount
@@ -87,6 +86,10 @@ class ChallengeEnvironment():
             Returns:
             reward: The reward associated with the provided action or nan if the job is not complete.
             
+            Raises:
+            ValueError
+            If response status is not 200.
+            
             """
         rewardUrl = '%s/evaluate/action/'%self._baseuri
 
@@ -102,6 +105,9 @@ class ChallengeEnvironment():
 
             #print(extended_action)
             response = requests.post(rewardUrl, data = json.dumps(extended_action), headers = {'Content-Type': 'application/json', 'Accept': 'application/json'});
+            if response.status_code is not 200:
+                raise ValueError("Invalid Environment. Check the baseuri and type.")
+            
             data = response.json();
             
             reward = float(data['data'][0])
@@ -124,13 +130,20 @@ class ChallengeEnvironment():
             
             Returns:
             reward: The episodic reward associated with the provided policy or nan if the job is not complete.
-            
+
+            Raises:
+            ValueError
+            If response status is not 200.
+
             """
         rewardUrl = '%s/evaluate/policy/'%self._baseuri
 
         try:
             #print(policy)
             response = requests.post(rewardUrl, data = json.dumps(policy), headers = {'Content-Type': 'application/json', 'Accept': 'application/json'});
+            if response.status_code is not 200:
+                raise ValueError("Invalid Environment. Check the baseuri and type.")
+
             data = response.json();
             reward = float(data['data'])
         except Exception as e:
