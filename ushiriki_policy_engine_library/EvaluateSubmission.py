@@ -117,7 +117,8 @@ class EvaluateAugmentedChallengeSubmission():
         self.episode_number = episode_number
         self.reset();
         self.filename = filename
-        self.scoringFunction()
+        print(self.scoringFunction())
+        self.create_submissions()
 
     def reset(self):
         """Resets the state and clears all evidence of past actions."""
@@ -136,10 +137,8 @@ class EvaluateAugmentedChallengeSubmission():
             e = self.environment()
             a = self.agent(e);
             finalpolicy, episodicreward = a.generate()
-            if len(e.history) > 0:
-                self.allhistory.append(e.history)
-            if len(e.history1) > 0:
-                self.allhistory.append(e.history1[0])
+            self.allhistory.append(e.history)
+            self.allhistory.append(e.history1)
             self.policies.append(finalpolicy)
             self.rewards.append(episodicreward)
             self.run.append(ii)
@@ -164,14 +163,17 @@ class EvaluateAugmentedChallengeSubmission():
                 }
     
         if len(self.allhistory[0])==0:
+            #if learning from full policies
             data2 = {'run':-1-np.arange(len(flatten(self.allhistory))),
                     'rewards':[i[1] for i in flatten(self.allhistory)],
                     'policy':[i[0] for i in flatten(self.allhistory)]
                     }
         else:
-            data2 = {'run':-1-np.arange(len(flatten(self.allhistory[::2]))/5),
-                'rewards':[sum([k[-1] for k in j]) for j in [i for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*5)]],
-                'policy':[{k[0]:[k[1],k[2]] for k in j} for j in [i[:5] for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*5)]]
+            #if learning from sequences of actions
+            dim = self.environment().policyDimension
+            data2 = {'run':-1-np.arange(len(flatten(self.allhistory[::2]))/dim),
+                'rewards':[sum([k[-1] for k in j]) for j in [i for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*dim)]],
+                'policy':[{k[0]:[k[1],k[2]] for k in j} for j in [i[:dim] for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*dim)]]
                 }
         submission_file = pd.concat([pd.DataFrame(data),pd.DataFrame(data2)] , ignore_index=True)
         submission_file.to_csv(self.filename, index=False)
