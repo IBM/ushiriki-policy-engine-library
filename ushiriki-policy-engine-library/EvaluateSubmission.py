@@ -1,0 +1,161 @@
+import pandas as pd
+import numpy as np
+
+class EvaluateChallengeSubmission():
+    """
+        A class which defines how the Challenge submissions are to be evaluated.
+        
+        Attributes:
+        environment (object): The environment used to assess the performence of the selected policies and actions.
+        agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
+        episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
+        
+        """
+    def __init__(self, environment, agent, filename = 'my_submission.csv', episode_number = 20):
+        """
+            The constructor for evaluation class.
+            
+            Parameters:
+            environment (object): The environment used to assess the performence of the selected policies and actions.
+            agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
+            filename (string): User selected file to save the assessment output.
+            episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
+
+            Returns:
+            None
+            
+            """
+        self.environment = environment
+        self.agent = agent
+        self.episode_number = episode_number
+        self.reset();
+        print(self.scoringFunction())
+        self.create_submissions(filename)
+
+    def reset(self):
+        """Resets the state and clears all evidence of past actions."""
+        self.policies = []
+        self.rewards = []
+        self.run = []
+
+    def scoringFunction(self):
+        """Initializes an instance of the environment, and an instance of the agent (with the new environment).
+            Accesses the agent's `generate` method to begin the training process and generate the best policy.
+            Repeats this process 10 times."""
+        #Should be parallized
+        for ii in range(10):
+            e = self.environment()
+            a = self.agent(e);
+            finalpolicy, episodicreward = a.generate()
+            self.policies.append(finalpolicy)
+            self.rewards.append(episodicreward)
+            self.run.append(ii)
+        
+        return np.median(self.rewards)
+
+    def create_submissions(self, filename = 'my_submission.csv'):
+        """
+            Using data collected during the scoring function, populate a csv file with the policies learned.
+            The scores for these policies are included as a convenience, but will neede to be recalculated.
+            
+            Parameters:
+            filename (string): File to save the assessment output.
+            
+            """
+        labels = ['run', 'reward', 'policy']
+        rewards = np.array(self.rewards)
+        data = { 'run': self.run,
+            'rewards': rewards,
+                'policy': self.policies,
+                }
+        submission_file = pd.DataFrame(data)
+        submission_file.to_csv(filename, index=False)
+
+class EvaluateAugmentedChallengeSubmission():
+    """
+        A class which defines how the Challenge submissions are to be evaluated.
+        
+        Attributes:
+        environment (object): The environment used to assess the performence of the selected policies and actions.
+        agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
+        episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
+        
+        """
+    def __init__(self, environment, agent, filename = 'my_submission.csv', episode_number = 20):
+        """
+            The constructor for evaluation class.
+            
+            Parameters:
+            environment (object): The environment used to assess the performence of the selected policies and actions.
+            agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
+            filename (string): User selected file to save the assessment output.
+            episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
+            score(number): The score assigned to the evaluated submission.
+
+            Returns:
+            None
+            
+            """
+        self.environment = environment
+        self.agent = agent
+        self.episode_number = episode_number
+        self.reset();
+        self.filename = filename
+        self.scoringFunction()
+
+    def reset(self):
+        """Resets the state and clears all evidence of past actions."""
+        self.policies = []
+        self.rewards = []
+        self.run = []
+        self.allhistory = []
+        self.score = None
+
+    def scoringFunction(self):
+        """Initializes an instance of the environment, and an instance of the agent (with the new environment).
+            Accesses the agent's `generate` method to begin the training process and generate the best policy.
+            Repeats this process 10 times."""
+        #Should be parallized
+        for ii in range(10):
+            e = self.environment()
+            a = self.agent(e);
+            finalpolicy, episodicreward = a.generate()
+            if len(e.history) > 0:
+                self.allhistory.append(e.history)
+            if len(e.history1) > 0:
+                self.allhistory.append(e.history1[0])
+            self.policies.append(finalpolicy)
+            self.rewards.append(episodicreward)
+            self.run.append(ii)
+        self.score = np.median(self.rewards)
+        return self.score
+
+    def create_submissions(self):
+        """
+            Using data collected during the scoring function, populate a csv file with the policies learned.
+            The scores for these policies are included as a convenience, but will neede to be recalculated.
+            
+            Parameters:
+            filename (string): File to save the assessment output.
+            
+            """
+        from itertools import zip_longest
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        rewards = np.array(self.rewards)
+        data = { 'run': self.run,
+            'rewards': rewards,
+                'policy': self.policies,
+                }
+    
+        if len(self.allhistory[0])==0:
+            data2 = {'run':-1-np.arange(len(flatten(self.allhistory))),
+                    'rewards':[i[1] for i in flatten(self.allhistory)],
+                    'policy':[i[0] for i in flatten(self.allhistory)]
+                    }
+        else:
+            data2 = {'run':-1-np.arange(len(flatten(self.allhistory[::2]))/5),
+                'rewards':[sum([k[-1] for k in j]) for j in [i for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*5)]],
+                'policy':[{k[0]:[k[1],k[2]] for k in j} for j in [i[:5] for i in zip_longest(*[iter(flatten(self.allhistory[::2]))]*5)]]
+                }
+        submission_file = pd.concat([pd.DataFrame(data),pd.DataFrame(data2)] , ignore_index=True)
+        submission_file.to_csv(self.filename, index=False)
