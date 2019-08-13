@@ -61,11 +61,13 @@ class ChallengeEnvironment():
         self._realworkercount = realworkercount
 
         self.actionDimension = 2
-        self.policyDimension = 5
-        self._baseuri =  baseuri+"/dli19/"+type
+        self.policyDimension = 20
+        self._baseuri =  baseuri+"/dli19/"+type if type is not "" else baseuri+"/dli19"
         self.userId = userID
         self._experimentCount = experimentCount
         self.experimentsRemaining = self._experimentCount
+        self.history = []
+        self.history1 = []
         self.reset()
 
     def reset(self):
@@ -87,6 +89,10 @@ class ChallengeEnvironment():
             Returns:
             reward: The reward associated with the provided action or nan if the job is not complete.
             
+            Raises:
+            ValueError
+            If response status is not 200.
+
             """
         rewardUrl = '%s/evaluate/action/'%self._baseuri
 
@@ -102,6 +108,9 @@ class ChallengeEnvironment():
 
             #print(extended_action)
             response = requests.post(rewardUrl, data = json.dumps(extended_action), headers = {'Content-Type': 'application/json', 'Accept': 'application/json'});
+            if response.status_code is not 200:
+                raise ValueError("Invalid Environment. Check the baseuri and type.")
+            
             data = response.json();
             
             reward = float(data['data'][0])
@@ -125,12 +134,19 @@ class ChallengeEnvironment():
             Returns:
             reward: The episodic reward associated with the provided policy or nan if the job is not complete.
             
+            Raises:
+            ValueError
+            If response status is not 200.
+
             """
         rewardUrl = '%s/evaluate/policy/'%self._baseuri
 
         try:
             #print(policy)
             response = requests.post(rewardUrl, data = json.dumps(policy), headers = {'Content-Type': 'application/json', 'Accept': 'application/json'});
+            if response.status_code is not 200:
+                raise ValueError("Invalid Environment. Check the baseuri and type.")
+            
             data = response.json();
             reward = float(data['data'])
         except Exception as e:
@@ -175,7 +191,8 @@ class ChallengeEnvironment():
             self.state += 1
 
         if self.state > self.policyDimension: self.done = True
-        
+        self.history.append([self.state-1, action[0], action[1], reward])
+
         return self.state, reward, self.done, {}
 
     def evaluatePolicy(self, data, coverage = 1):
@@ -210,11 +227,13 @@ class ChallengeEnvironment():
             result = pool.map(self._simplePostPolicy, data)
             pool.close()
             pool.join()
+            self.history1.append([i for i in zip(data,result)])
         elif type(data) is dict:
             self.experimentsRemaining -= 1*20
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             result = self._simplePostPolicy(data)
+            self.history1.append([data,result])
         else:
             raise ValueError('argument should be a policy (dictionary) or a list of policies')
 
