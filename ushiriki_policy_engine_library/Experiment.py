@@ -42,7 +42,7 @@ class Experiment():
             status (boolean): Are all posted jobs known to be completed.
 
         """
-    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], locationId = "abcd123", resolution = "test", timeout = 0, realworkercount = 1, experimentId = None):
+    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], locationId = "abcd123", resolution = "test", timeout = 0, realworkercount = 1, experimentId = None, rewardType = 'cpda'):
         """
         The constructor for experiment class. If the class is being intialized with an existing experiment
         
@@ -82,6 +82,8 @@ class Experiment():
         self.status = True
         self._timestamp = time.time()
         self._apiKey = apiKey
+        self.rewardType = rewardType
+        
         if experimentId == None:
             data = dict([])
             data["actionRangeList"]=actionRangeList
@@ -102,7 +104,7 @@ class Experiment():
         else:
             self.experimentId = experimentId
 
-    def getJobReward(self, jobId, rewardType = 'cpda'):
+    def getJobReward(self, jobId):
         """
             The function to poll the rewards for a given job, assuming that the job is complete.
             
@@ -120,12 +122,12 @@ class Experiment():
         try:
             response = requests.post(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
-            value = float(responseData['jsonNode']['rewardsObject'][rewardType])
+            value = float(responseData['jsonNode']['rewardsObject'][self.rewardType])
         except:
             value = None
         return value
 
-    def getJobRewardBlocking(self, jobId, rewardType = 'cpda', pollingInterval = 0, count = 0):
+    def getJobRewardBlocking(self, jobId, pollingInterval = 0, count = 0):
         """
             The function to poll the rewards for a given job, assuming that the job is complete.
             
@@ -138,7 +140,7 @@ class Experiment():
             reward: A dictionary containing all of the rewards associated with the provided jobId or None if the job is not complete.
             
             """
-        reward = self.getJobReward(jobId, rewardType)
+        reward = self.getJobReward(jobId)
         while reward is None and count > 0:
             time.sleep(pollingInterval+random.randint(0,6));
             count -= 1
