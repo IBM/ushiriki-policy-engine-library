@@ -220,7 +220,7 @@ class ChallengeEnvironment():
             for apolicy in data:
                 if any([any((i[0]<0,i[0]>1,i[1]<0,i[1]>1)) for i in [apolicy[k] for k in apolicy]]):
                     raise ValueError('All interventions should be in [0,1]')
-            self.experimentsRemaining -= len(data)*20
+            self.experimentsRemaining -= len(data)*self.policyDimension
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             pool = Pool(self._realworkercount)
@@ -229,7 +229,7 @@ class ChallengeEnvironment():
             pool.join()
             self.history1.append([i for i in zip(data,result)])
         elif type(data) is dict:
-            self.experimentsRemaining -= 1*20
+            self.experimentsRemaining -= 1*self.policyDimension
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             result = self._simplePostPolicy(data)
