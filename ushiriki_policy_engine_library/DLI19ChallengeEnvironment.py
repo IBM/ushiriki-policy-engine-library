@@ -61,7 +61,7 @@ class ChallengeEnvironment():
         self._realworkercount = realworkercount
 
         self.actionDimension = 2
-        self.policyDimension = 20
+        self.policyDimension = 5
         self._baseuri =  baseuri+"/dli19/"+type if type is not "" else baseuri+"/dli19"
         self.userId = userID
         self._experimentCount = experimentCount
