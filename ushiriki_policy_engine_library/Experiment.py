@@ -201,7 +201,7 @@ class Experiment():
             """
         postJobUrl='/api/v1/experiments/postJob'
         jobId = None
-        intervention_names=['ITN', 'IRS']
+        intervention_names=['ITN', 'IRS', 'GVI']
 
         if seed is None:
             seed = random.randint(0,100)
