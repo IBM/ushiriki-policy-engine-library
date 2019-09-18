@@ -160,12 +160,17 @@ class Experiment():
             
             Parameters:
             jobId (string): The ID of the job that is to be queried. The ID must be a valid.
-            
+
+            Raises:
+            ValueError
+                If there is an attempt to check the status where JobID is null
+
             Returns:
             status: True iff the jobId is valid and the job has completed running.
             
             """
         status = False
+        if jobId is None: raise ValueError("None as jobID")
         try:
             getJobStatusUrl='/api/v1/experiments/status/%s'
             response = requests.get(self._baseuri+getJobStatusUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
