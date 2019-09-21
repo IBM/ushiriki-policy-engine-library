@@ -280,12 +280,15 @@ class Experiment():
         print(self.experimentsRemaining, " Evaluations Remaining")
         if self.experimentsRemaining <= 0:
             raise ValueError('You have exceeded the permitted number of Evaluations')
-        if type(data) is not ndarray:
-            raise ValueError('argument should be a numpy array')
-        
+#        if type(data) is not ndarray:
+#            raise ValueError('argument should be a numpy array')
+
         from multiprocessing import Pool
-        if len(data.shape) == 2: #array of policies
-            self.experimentsRemaining -= data.shape[0]
+        if (type(data) == list and type(data[0]) == list) or len(data.shape) == 2: #array of policies
+            if type(data) is ndarray:
+                self.experimentsRemaining -= data.shape[0]
+            if type(data) == list:
+                self.experimentsRemaining -= len(data)
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             pool = Pool(self._realworkercount)
