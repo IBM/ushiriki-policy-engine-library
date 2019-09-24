@@ -232,7 +232,7 @@ class Experiment():
             else:
                 message = responseData['message']
                 #print(message)
-                if "Another experiment has been run before" in message:
+                if "has been run before" in message:
                     jobId = message.split()[17]
                 else:
                     raise RuntimeError(message)
