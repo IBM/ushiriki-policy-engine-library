@@ -240,13 +240,12 @@ class Experiment():
             print(e);
         return jobId
 
-    def _postJobBlocking(self, job, pollingInterval = 20, count = 20, seed = None):
+    def _postJobBlocking(self, job, count = 20, seed = None):
         """
             The function to post a job to the task clerk, but blocks until the process is complete (or terminated).
             
             Parameters:
             job (object): The job to be posted.
-            pollingInterval (int): The time interval in seconds that any job can be polled. Randomized.
             count (int): The number of times that a given job will be queried.
             seed (int): The random seed to be applied to the job.
             
@@ -255,7 +254,7 @@ class Experiment():
             
             """
         id = self._postJob(job, seed = seed)
-        return self.getJobRewardBlocking(id, pollingInterval = pollingInterval, count = count)
+        return self.getJobRewardBlocking(id, pollingInterval = self._timeout, count = count)
 
     def reset(self):
         """ Resets the experiment budget to the value defined at creation."""
