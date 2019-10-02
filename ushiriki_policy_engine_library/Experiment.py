@@ -134,7 +134,7 @@ class Experiment():
             value = None
         return value
 
-    def getJobRewardBlocking(self, jobId, pollingInterval = 0, count = 0):
+    def getJobRewardBlocking(self, jobId, pollingInterval = 0, count = 1):
         """
             The function to poll the rewards for a given job, assuming that the job is complete.
             
@@ -152,6 +152,7 @@ class Experiment():
             time.sleep(pollingInterval+random.randint(0,6));
             count -= 1
             reward = self.getJobReward(jobId)
+        if count == 0: reward = float('NaN')
         return reward
 
     def getJobStatus(self, jobId):
@@ -240,7 +241,7 @@ class Experiment():
             print(e);
         return jobId
 
-    def _postJobBlocking(self, job, count = 20, seed = None):
+    def _postJobBlocking(self, job, count = 500, seed = None):
         """
             The function to post a job to the task clerk, but blocks until the process is complete (or terminated).
             
@@ -354,3 +355,85 @@ class Experiment():
             val = None
         return val
 
+
+    def evaluateRewardNonBlockingV2(self, data, coverage=.8, timeout=0):
+        """
+            The function to post a job to the task clerk, without blocking until the job is evaluated (or abandoned).
+            
+            Parameters:
+            data (ndarray): The job or jobs to be evaluated.
+            coverage (number): The fraction of the jobs which must be completed prior to termination
+            timeout (number): The amount of time required before trying again
+            Raises:
+            ValueError
+                If Request would exceed the permitted number of Evaluations
+                If the permitted number of evaluations have been exceeded
+                
+            Returns:
+            reward: A list containing either the rewards associated with the provided job or None if the job is not complete for all jobs to be evaluated.
+            
+            """
+        from numpy import ndarray
+        import timeit
+        print(self.experimentsRemaining, " Evaluations Remaining")
+        if self.experimentsRemaining <= 0:
+            raise ValueError('You have exceeded the permitted number of Evaluations')
+        if type(data) is not ndarray:
+            raise ValueError('argument should be a numpy array')
+
+        try:
+            completed = []
+            rewards = np.empty((data.shape[0]))
+            rewards[:] = np.nan
+            completed_new = np.empty((data.shape[0]))
+            completed_new[:] = False
+            envs = []
+            idx = {}
+
+
+
+
+
+            from multiprocessing import Pool
+            if len(data.shape) >= 2: #array of policies
+                if type(data) is ndarray:
+                    self.experimentsRemaining -= data.shape[0]
+                if self.experimentsRemaining < 0:
+                    raise ValueError('Request would exceed the permitted number of Evaluations')
+                pool = Pool(self._realworkercount)
+                envs = pool.map(self._postJob, data)
+                pool.close()
+                pool.join()
+            else:
+                envs = [self._postJob(data)]
+                self.experimentsRemaining -= 1
+
+            idx = {env:loc for loc,env in enumerate(envs)}
+            print(envs, idx)
+            '''
+            for item in data:
+                envs.append(self._postJob(item))
+                idx[envs[-1]] = len(envs)-1
+            '''
+
+            envs = np.array(envs)
+            env_idx = np.arange(data.shape[0])
+            #env_idx, envs = map(postActionWrapper, zip(np.arange(data.shape[0]),data))
+            while completed_new.sum() < float(coverage)*data.shape[0]:
+                timeit.time.sleep(timeout); 
+                tmp_envs = envs[completed_new == False]
+                tmp_env_idx = env_idx[completed_new == False]
+                print(completed_new, tmp_env_idx)
+                for item in tmp_envs:
+                    status = self.getJobStatus(item)
+                    completed_new[idx[item]] = status == True
+                    print(item, status)
+            for i,v in enumerate(completed_new):
+                if v:
+                   print(envs[i])
+                   rewards[i] = self.getJobRewardBlocking(envs[i])
+            val = rewards.tolist();
+        except:
+            print(exc_info(),data)
+            val = None
+        return val
