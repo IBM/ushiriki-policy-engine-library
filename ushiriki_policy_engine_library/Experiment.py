@@ -241,6 +241,50 @@ class Experiment():
             print(e);
         return jobId
 
+    def _postBulkJobs(self, jobs, seeds = None):
+        """
+            The non-blocking function to post a job to the task clerk.
+            
+            Parameters:
+            job (object): The one or more job to be posted.
+            seed (int): The random seed to be applied to the job(s).
+            
+            Returns:
+            status: The jobId generated for this job.
+            
+            """
+        postJobUrl='/api/v1/experiments/postBulkJobs'
+        jobId = None
+        intervention_names=['ITN', 'IRS', 'GVI']
+        
+        if type(jobs) is list and seeds is None:
+            seeds = []
+            for i in jobs:
+                seeds.append(random.randint(0,100))
+        elif type(jobs) is not list and type(seeds) is list:
+            seeds = [seeds[0]]
+
+        try:
+            data = []
+            
+            for job,seed in zip(jobs, seeds):
+                interventionlist = []
+                for intervention in job:
+                    interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%int(intervention[3])} )
+                data.append({"actions":interventionlist, "experimentId": self.experimentId, "actionSeed": seed, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
+
+            response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+            responseData = response.json();
+
+            print(responseData['jsonNode'])
+
+            if responseData['statusCode'] == 202:
+                jobIds = responseData['jsonNode']['created']+responseData['jsonNode']['duplicate']
+            else:
+                raise RuntimeError(message)
+        except Exception as e:
+            print(e);
+        return jobIds
     def _postJobBlocking(self, job, count = 500, seed = None):
         """
             The function to post a job to the task clerk, but blocks until the process is complete (or terminated).
