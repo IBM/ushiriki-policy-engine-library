@@ -432,8 +432,6 @@ class Experiment():
 
             envs = self._postBulkJobs(data)
 
-            idx = {env:loc for loc,env in zip(range(envs.shape[0]), envs)}
-            print(envs, idx)
             '''
             for item in data:
                 envs.append(self._postJob(item))
@@ -441,6 +439,8 @@ class Experiment():
             '''
 
             envs = np.array(envs)
+            idx = {env:loc for loc,env in zip(range(envs.shape[0]), envs)}
+            print(envs, idx)
             env_idx = np.arange(envs.shape[0])
             rewards = np.empty((envs.shape[0]))
             rewards[:] = np.nan
@@ -449,14 +449,14 @@ class Experiment():
 
             
             #env_idx, envs = map(postActionWrapper, zip(np.arange(data.shape[0]),data))
-            while completed_new.sum() < float(coverage)*data.shape[0]:
+            while completed_new.sum() < float(coverage)*envs.shape[0]:
                 timeit.time.sleep(timeout);
                 tmp_envs = envs[completed_new == False]
                 tmp_env_idx = env_idx[completed_new == False]
                 print(completed_new, tmp_env_idx)
                 for item in tmp_envs:
                     status = self.getJobStatus(item)
-                    completed_new[idx[item]] = status == True
+                    completed_new[np.where(envs == item)] = status == True
                     print(item, status)
             for i,v in enumerate(completed_new):
                 if v:
