@@ -254,10 +254,10 @@ class Experiment():
             
             """
         postJobUrl='/api/v1/experiments/postBulkJobs'
-        jobId = None
+        jobIds = None
         intervention_names=['ITN', 'IRS', 'GVI']
         
-        if type(jobs) is list and seeds is None:
+        if (type(jobs) is list or type(jobs) is np.ndarray) and seeds is None:
             seeds = []
             for i in jobs:
                 seeds.append(random.randint(0,100))
@@ -427,32 +427,12 @@ class Experiment():
 
         try:
             completed = []
-            rewards = np.empty((data.shape[0]))
-            rewards[:] = np.nan
-            completed_new = np.empty((data.shape[0]))
-            completed_new[:] = False
             envs = []
             idx = {}
 
+            envs = self._postBulkJobs(data)
 
-
-
-
-            from multiprocessing import Pool
-            if len(data.shape) >= 2: #array of policies
-                if type(data) is ndarray:
-                    self.experimentsRemaining -= data.shape[0]
-                if self.experimentsRemaining < 0:
-                    raise ValueError('Request would exceed the permitted number of Evaluations')
-                pool = Pool(self._realworkercount)
-                envs = pool.map(self._postJob, data)
-                pool.close()
-                pool.join()
-            else:
-                envs = [self._postJob(data)]
-                self.experimentsRemaining -= 1
-
-            idx = {env:loc for loc,env in enumerate(envs)}
+            idx = {env:loc for loc,env in zip(range(envs.shape[0]), envs)}
             print(envs, idx)
             '''
             for item in data:
@@ -461,10 +441,16 @@ class Experiment():
             '''
 
             envs = np.array(envs)
-            env_idx = np.arange(data.shape[0])
+            env_idx = np.arange(envs.shape[0])
+            rewards = np.empty((envs.shape[0]))
+            rewards[:] = np.nan
+            completed_new = np.empty((envs.shape[0]))
+            completed_new[:] = False
+
+            
             #env_idx, envs = map(postActionWrapper, zip(np.arange(data.shape[0]),data))
             while completed_new.sum() < float(coverage)*data.shape[0]:
-                timeit.time.sleep(timeout); 
+                timeit.time.sleep(timeout);
                 tmp_envs = envs[completed_new == False]
                 tmp_env_idx = env_idx[completed_new == False]
                 print(completed_new, tmp_env_idx)
