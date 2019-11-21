@@ -16,6 +16,7 @@
     '''
 import os
 from sys import exit, exc_info, argv
+import traceback
 from multiprocessing import Pool, current_process
 import random
 import json
@@ -238,7 +239,7 @@ class Experiment():
                 else:
                     raise RuntimeError(message)
         except Exception as e:
-            print(e);
+            print(e, traceback.format_exc());
         return jobId
 
     def _postBulkJobs(self, jobs, seeds = None):
