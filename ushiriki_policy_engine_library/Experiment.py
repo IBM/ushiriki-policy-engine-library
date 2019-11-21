@@ -200,7 +200,30 @@ class Experiment():
         response = requests.post(rewardUrl, headers = {'Content-Type': 'application/json', 'Accept': 'application/json'})
         output = response.text
         return output
+    def postLog(self):
+        """
+            The blocking function to post a log update to the task clerk.
+            
+            Parameters:
+            
+            Returns:
+            status: The jobId generated for this job.
+            
+            """
+        postLogUrl='/api/v1/experiments/addExperimentLogUsingPOST'
 
+        try:
+            data = json.dumps({"timestamp":time.time(), "status": 2, "description": "COMPLETED_EXPERIMENT"});
+            retval = False
+
+            response = requests.post(self._baseuri+postJobUrl+"/"+self.experimentId, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+            responseData = response.json();
+            if responseData['statusCode'] == 202:
+                retval = True
+        except Exception as e:
+            print(e, traceback.format_exc());
+        return retval
+    
     def _postJob(self, job, seed = None):
         """
             The non-blocking function to post a job to the task clerk.
