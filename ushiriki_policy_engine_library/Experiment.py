@@ -298,7 +298,7 @@ class Experiment():
                 for intervention in job:
                     interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%int(intervention[3])} )
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
-            print(data)
+            
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json();
 
