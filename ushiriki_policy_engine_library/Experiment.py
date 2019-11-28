@@ -217,7 +217,7 @@ class Experiment():
             data = json.dumps({"timestamp":time.time(), "status": 2, "description": "COMPLETED_EXPERIMENT"});
             retval = False
 
-            response = requests.post(self._baseuri+postJobUrl+"/"+self.experimentId, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+            response = requests.post(self._baseuri+postLogUrl+"/"+self.experimentId, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             if response.status_code == 200:
                 retval = True
             else:
