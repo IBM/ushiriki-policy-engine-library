@@ -131,7 +131,7 @@ class Experiment():
             else:
                 value = None
         except Exception as e:
-            print(e);
+            print(e, time.time());
             value = None
         return value
 
@@ -178,7 +178,7 @@ class Experiment():
             response = requests.get(self._baseuri+getJobStatusUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             status = response.text == 'true'
         except Exception as e:
-            print(e);
+            print(e, time.time());
         return status
 
     def getOutput(self, jobId, type):
@@ -223,7 +223,7 @@ class Experiment():
             else:
                 raise RuntimeError("Status code: ", response.status_code)
         except Exception as e:
-            print(e, traceback.format_exc());
+            print(e, traceback.format_exc(), time.time());
         return retval
 
     def _postJob(self, job, seed = None):
@@ -264,7 +264,7 @@ class Experiment():
                 else:
                     raise RuntimeError(message)
         except Exception as e:
-            print(e, traceback.format_exc());
+            print(e, traceback.format_exc(), time.time());
         return jobId
 
     def _postBulkJobs(self, jobs, seeds = None):
@@ -300,17 +300,18 @@ class Experiment():
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
             
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
-            responseData = response.json();
-
-            print(responseData['jsonNode'])
-
-            if responseData['statusCode'] == 202:
-                jobIds = responseData['jsonNode']['created']+responseData['jsonNode']['duplicate']
+            if response.status_code == 200:
+                responseData = response.json();
+                if responseData['statusCode'] == 202:
+                    jobIds = responseData['jsonNode']['created']+responseData['jsonNode']['duplicate']
+                else:
+                    raise RuntimeError(message)
             else:
-                raise RuntimeError(message)
+                raise RuntimeError("Post bulk job failed")
         except Exception as e:
-            print(e);
+            print(e, time.time());
         return jobIds
+        
     def _postJobBlocking(self, job, count = 500, seed = None):
         """
             The function to post a job to the task clerk, but blocks until the process is complete (or terminated).
@@ -421,7 +422,7 @@ class Experiment():
                    rewards[i] = self.getJobRewardBlocking(envs[i])
             val = rewards.tolist();
         except:
-            print(exc_info(),data)
+            print(exc_info(),data, time.time())
             val = None
         return val
 
@@ -490,6 +491,6 @@ class Experiment():
                    rewards[i] = self.getJobRewardBlocking(envs[i])
             val = rewards.tolist();
         except:
-            print(exc_info(),data)
+            print(exc_info(),data, time.time())
             val = None
         return val
