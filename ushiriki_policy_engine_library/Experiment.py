@@ -123,11 +123,12 @@ class Experiment():
         try:
             response = requests.post(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
-            datatype = type(responseData['jsonNode']['allRewards'][self.rewardType][sorted(responseData['jsonNode']['allRewards'][self.rewardType].keys())[-1]])
+            indicies = sorted([int(i) for i in responseData['jsonNode']['allRewards'][exp.rewardType].keys()])
+            datatype = type(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])])
             if datatype == list:
-                value = float(responseData['jsonNode']['allRewards'][self.rewardType][sorted(responseData['jsonNode']['allRewards'][self.rewardType].keys())[-1]][0])
+                value = float(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])][0])
             elif datatype is float:
-                value = float(responseData['jsonNode']['allRewards'][self.rewardType][sorted(responseData['jsonNode']['allRewards'][self.rewardType].keys())[-1]])
+                value = float(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])])
             else:
                 value = None
         except Exception as e:
