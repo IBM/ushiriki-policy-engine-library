@@ -42,7 +42,7 @@ class ChallengeEnvironment():
         
         """
 
-    def __init__(self, baseuri, experimentCount = 105, userID = "ChallengeUser", type = "", timeout = 0, realworkercount = 1):
+    def __init__(self, baseuri, experimentCount = 105, userID = "ChallengeUser", type = "", timeout = 0, realworkercount = 1, token=None):
         """
             The constructor for experiment class.
             
@@ -64,6 +64,7 @@ class ChallengeEnvironment():
         self.policyDimension = 5
         self._baseuri =  baseuri+"/neurips19/"+type if type is not "" else baseuri+"/neurips19"
         self.userId = userID
+        self.token = token
         self._experimentCount = experimentCount
         self.experimentsRemaining = self._experimentCount
         self.history = []
@@ -106,7 +107,7 @@ class ChallengeEnvironment():
             extended_action['rewards'] = self.rewards
 
             #print(extended_action)
-            response = requests.post(rewardUrl, data = json.dumps(extended_action), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.userId});
+            response = requests.post(rewardUrl, data = json.dumps(extended_action), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.token, 'userID':self.userId});
             if response.status_code is not 200:
                 raise ValueError("Invalid Environment. Check the baseuri and type.")
             
@@ -141,7 +142,7 @@ class ChallengeEnvironment():
 
         try:
             #print(policy)
-            response = requests.post(rewardUrl, data = json.dumps(policy), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.userId});
+            response = requests.post(rewardUrl, data = json.dumps(policy), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.token, 'userID':self.userId});
             if response.status_code is not 200:
                 raise ValueError("Environment Error. Check the baseuri and type. Also, checkout the suggestions related to the following error code: "+response.status_code)
             
@@ -237,4 +238,3 @@ class ChallengeEnvironment():
             raise ValueError('argument should be a policy (dictionary) or a list of policies')
 
         return result
-
