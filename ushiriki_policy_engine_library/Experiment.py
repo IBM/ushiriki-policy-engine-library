@@ -250,7 +250,7 @@ class Experiment():
         try:
             interventionlist = []
             for intervention in job:
-                time= datetime.datetime.strptime(%intervention[3],'%Y-%m-%d')
+                basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
                 interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
             data = json.dumps({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}});
 
@@ -299,7 +299,7 @@ class Experiment():
             for job,seed in zip(jobs, seeds):
                 interventionlist = []
                 for intervention in job:
-                    time= datetime.datetime.strptime(%intervention[3],'%Y-%m-%d')
+                    basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
                     interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
             
