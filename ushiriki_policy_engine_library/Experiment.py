@@ -251,7 +251,7 @@ class Experiment():
             interventionlist = []
             for intervention in job:
                 basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
-                interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
+                interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%d"%intervention[3]} )
             data = json.dumps({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}});
 
             response = requests.post(self._baseuri+postJobUrl, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
@@ -299,7 +299,7 @@ class Experiment():
                 interventionlist = []
                 for intervention in job:
                     basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
-                    interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
+                    interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%d"%intervention[3]} )
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
 
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
