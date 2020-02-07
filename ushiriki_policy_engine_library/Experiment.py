@@ -37,25 +37,25 @@ class Experiment():
             _realworkercount (int): The number of jobs which can concurrently be active.
             policyDimension (int): The number of elements in the policy.
             _baseuri (string): The http endpoint for the task clerk.
-            _locationId (string): The unique location id.
+            _scenarioId (string): The unique scenario id.
             _userId (string): The unique user id.
             _experimentCount (int): The experiment budget.
             experimentsRemaining (int): The number of jobs that are remaining in the experiment budget.
             status (boolean): Are all posted jobs known to be completed.
 
         """
-    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], locationId = "abcd123", resolution = "test", timeout = 0, realworkercount = 1, experimentId = None, rewardType = 'cpda'):
+    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], scenarioId = "abcd123", resolution = "test", timeout = 0, realworkercount = 1, experimentId = None, rewardType = 'cpda'):
         """
         The constructor for experiment class. If the class is being intialized with an existing experiment
         
         Parameters:
         baseuri (string): The http endpoint for the task clerk.
         apiKey (string): A valid token from the identity services for the given userId. Required
-        userId (string): A valid userId able to create experiments and post jobs for a given locationId.
+        userId (string): A valid userId able to create experiments and post jobs for a given scenarioId.
         experimentCount (int): The experiment budget (the number of jobs permitted) for this experiment.
         actionRangeList (list): The list of potential actions and the ranges which are in scope for jobs in this experiment.
-        locationId (string): The locationId for all jobs in this experiment. Must be valid, and should have at least one reward function.
-        resolution (string): The population size for the selected location. May not be valid for all locations.
+        scenarioId (string): The scenarioId for all jobs in this experiment. Must be valid, and should have at least one reward function.
+        resolution (string): The population size for the selected scenario. May not be valid for all locations.
         timeout (int): The time interval in seconds that any job can be polled.
         realworkercount  (int): The number of jobs which can concurrently be active.
         experimentId (string): The id of the experiment to be represented by this class.
@@ -77,7 +77,7 @@ class Experiment():
 
         self.policyDimension = 2
         self._baseuri =  baseuri
-        self._locationId = locationId
+        self._scenarioId = scenarioId
         self._userId = userId
         self._experimentCount = experimentCount
         self.experimentsRemaining = experimentCount
@@ -91,7 +91,7 @@ class Experiment():
             data["actionRangeList"]=actionRangeList
             data["algorithmId"] = "string"
             data["exp_type"] = "string"
-            data["locationId"] = self._locationId
+            data["scenarioId"] = self._scenarioId
             data["resolution"] = self._resolution
             data["resourceExperiment"] = "string"
             data["status"] = self.status
@@ -300,7 +300,7 @@ class Experiment():
                 for intervention in job:
                     basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
                     interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%d"%intervention[3]} )
-                data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
+                data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "scenarioId":self.scenarioId, "resolution":self._resolution, "userId":self._userId});
 
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             if response.status_code == 200:
