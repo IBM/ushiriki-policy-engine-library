@@ -23,6 +23,7 @@ import json
 import requests
 import numpy as np
 import time
+from datetime import datetime
 
 class Experiment():
     """
@@ -249,12 +250,12 @@ class Experiment():
         try:
             interventionlist = []
             for intervention in job:
-                interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%int(intervention[3])} )
+                basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
+                interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%d"%intervention[3]} )
             data = json.dumps({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}});
 
             response = requests.post(self._baseuri+postJobUrl, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json();
-
             if responseData['statusCode'] == 202:
                 jobId = responseData['jsonNode']['response']['id']
             else:
@@ -297,15 +298,17 @@ class Experiment():
             for job,seed in zip(jobs, seeds):
                 interventionlist = []
                 for intervention in job:
-                    interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%int(intervention[3])} )
+                    basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
+                    interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%d"%intervention[3]} )
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "locationId":self._locationId, "resolution":self._resolution, "userId":self._userId});
-            
+
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             if response.status_code == 200:
                 responseData = response.json();
                 if responseData['statusCode'] == 202:
                     jobIds = responseData['jsonNode']['created']+responseData['jsonNode']['duplicate']
                 else:
+                    message = responseData['message']
                     raise RuntimeError(message)
             else:
                 raise RuntimeError("Post bulk job failed")
