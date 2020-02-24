@@ -300,7 +300,7 @@ class Experiment():
                 for intervention in job:
                     basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
                     interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
-                data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "scenarioId":self.scenarioId, "resolution":self._resolution, "userId":self._userId});
+                data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}, "scenarioId":self._scenarioId, "resolution":self._resolution, "userId":self._userId});
 
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             if response.status_code == 200:
