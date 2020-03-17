@@ -125,7 +125,7 @@ class Experiment():
         try:
             response = requests.post(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
-            indicies = sorted([int(i) for i in responseData['jsonNode']['allRewards'][self.rewardType].keys()])
+            indicies = sorted([i for i in responseData['jsonNode']['allRewards'][self.rewardType].keys()])
             datatype = type(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])])
             if datatype == list:
                 value = float(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])][0])
