@@ -26,3 +26,14 @@ class ChallengeEnvironment1(ChallengeEnvironment):
 ```     
 
 This code creates an environment object, and defines a user. Some environments will require additional parameters such as tokens and other optional elements.
+
+## Citation
+
+```lisp
+@misc{pending,
+  Author = {Sekou L Remy and Oliver E Bent},
+  Title = {A Global Health Gym Environment for RL Applications},
+  Year = {2020},
+  Eprint = {arXiv:pending},
+}
+```
