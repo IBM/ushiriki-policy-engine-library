@@ -80,6 +80,7 @@ class Experiment():
         self._scenarioId = scenarioId
         self._userId = userId
         self._experimentCount = experimentCount
+        self._postBulkAttempts = 3
         self.experimentsRemaining = experimentCount
         self.status = True
         self._timestamp = time.time()
@@ -311,7 +312,13 @@ class Experiment():
                     message = responseData['message']
                     raise RuntimeError(message)
             else:
-                raise RuntimeError("Post bulk job failed")
+                self._postBulkAttempts -= 1
+                if self._postBulkAttempts > 0:
+                    print(time.time(), "Post bulk job failed. Retrying in 10 seconds")
+                    time.sleep(10)
+                    self._postBulkJobs(jobs, seeds = seeds)
+                else:
+                    raise RuntimeError("Post bulk job failed final time")
         except Exception as e:
             print(e, time.time());
         return jobIds
