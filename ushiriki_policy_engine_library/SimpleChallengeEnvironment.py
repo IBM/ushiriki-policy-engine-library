@@ -59,10 +59,12 @@ class ChallengeEnvironment():
 
         self.actionDimension = 2
         self.policyDimension = 5
-        self._baseuri =  baseuri if type == "" else baseuri+"/"
+        self._baseuri =  baseuri+"/sample/"+type if type is not "" else baseuri+"/sample"
         self.userId = userID
         self._experimentCount = experimentCount
         self.experimentsRemaining = self._experimentCount
+        self.history = []
+        self.history1 = []
         self.reset()
 
     def reset(self):
@@ -159,7 +161,7 @@ class ChallengeEnvironment():
             self.state += 1
 
         if self.state > self.policyDimension: self.done = True
-        
+        self.history.append([self.state-1, action[0], action[1], reward])
         return self.state, reward, self.done, {}
 
     def evaluatePolicy(self, data, coverage = 1):
@@ -194,11 +196,13 @@ class ChallengeEnvironment():
             result = pool.map(self._simplePostPolicy, data)
             pool.close()
             pool.join()
+            self.history1.append([i for i in zip(data,result)])
         elif type(data) is dict:
             self.experimentsRemaining -= 1*5
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             result = self._simplePostPolicy(data)
+            self.history1.append([data,result])
         else:
             raise ValueError('argument should be a policy (dictionary) or a list of policies')
      
