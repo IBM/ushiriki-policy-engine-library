@@ -3,7 +3,7 @@ User facing library for accessing the Ushiriki Policy Engine webservice API
 
 
 To install this library:
-`pip install https://github.com/IBM/ushiriki-policy-engine-library --user --upgrade`
+`pip install git+https://github.com/IBM/ushiriki-policy-engine-library --user --upgrade`
 
 This command will download and install the current source code from this repo (upgrading the source code if previously installed). It will also place the necessary modules in the local [user] space. All dependencies required will also be installed as well. Alternatively, one could also clone the repository, however the path parameters and the requirements will need to be manually configured.
 
