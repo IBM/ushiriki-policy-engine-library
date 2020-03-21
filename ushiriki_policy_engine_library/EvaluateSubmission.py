@@ -164,9 +164,9 @@ class EvaluateAugmentedChallengeSubmission():
     
         if len(self.allhistory[0])==0:
             #if learning from full policies
-            data2 = {'run':-1-np.arange(len(flatten(self.allhistory))),
-                    'rewards':[i[1] for i in flatten(self.allhistory)],
-                    'policy':[i[0] for i in flatten(self.allhistory)]
+            data2 = {'run':-1-np.arange(len(flatten(flatten(self.allhistory)))),
+                    'rewards':[i[1] for j in range(1,len(self.allhistory)+1,2) for  i in self.allhistory[j][0]] ,
+                    'policy':[i[0] for j in range(1,len(self.allhistory)+1,2) for  i in self.allhistory[j][0]]
                     }
         else:
             #if learning from sequences of actions
