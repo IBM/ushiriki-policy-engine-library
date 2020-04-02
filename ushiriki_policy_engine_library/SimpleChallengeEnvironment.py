@@ -21,6 +21,10 @@ import random
 import json
 import requests
 
+class ActionSpace(list):
+    def sample(self):
+        return random.choice(self)
+    
 class ChallengeEnvironment():
     """
         This is the class which defines the simple Sequential Decision-making Environment object, and enables either actions or policies to be evaluated.
@@ -63,10 +67,13 @@ class ChallengeEnvironment():
         self.userId = userID
         self._experimentCount = experimentCount
         self.experimentsRemaining = self._experimentCount
+        self._resolution = 0.1
         self.history = []
         self.history1 = []
         self.reset()
-
+        xy = [(round(x*self._resolution,2),round(y*self._resolution,2)) for x in range(0,int(1/self._resolution) +1,1) for y in range(0,int(1/self._resolution) +1,1)]
+        self.action_space = ActionSpace(xy)
+        
     def reset(self):
         """Resets the state and clears all evidence of past actions."""
         self.state = 1
