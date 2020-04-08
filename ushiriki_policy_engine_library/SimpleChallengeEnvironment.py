@@ -186,6 +186,7 @@ class ChallengeEnvironment():
             If any intervention is not in [0,1]
             
             Returns:
+            states: A list containing either the states associated with the provided actions or a list of lists of states if multiple sequences of actions (i.e. multiple policies) were sent for evaluation.
             reward: A list containing either the rewards associated with the provided action or nan if the action is not complete for all actions to be evaluated.
             
             """
@@ -193,7 +194,9 @@ class ChallengeEnvironment():
 
         from multiprocessing import Pool
         if type(data) is list and all([type(i) is dict for i in data]): #list of policies
+            states = []
             for apolicy in data:
+                states.append([i for i in apolicy.keys()])
                 if any([any((i[0]<0,i[0]>1,i[1]<0,i[1]>1)) for i in [apolicy[k] for k in apolicy]]):
                     raise ValueError('All interventions should be in [0,1]')
             self.experimentsRemaining -= len(data)*5
@@ -209,8 +212,9 @@ class ChallengeEnvironment():
             if self.experimentsRemaining < 0:
                 raise ValueError('Request would exceed the permitted number of Evaluations')
             result = self._simplePostPolicy(data)
+            states = [i for i in data.keys()]
             self.history1.append([data,result])
         else:
             raise ValueError('argument should be a policy (dictionary) or a list of policies')
      
-        return result
+        return states, result
