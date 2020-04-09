@@ -101,7 +101,7 @@ class Experiment():
 
             response = requests.post(self._baseuri+setupExperiment, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             
-            if response.status_code is not 202: raise ValueError("Not a valid post request")
+            if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request")
             responseData = response.json();
             self.experimentId = responseData['jsonNode']['response']['id']
         else:
