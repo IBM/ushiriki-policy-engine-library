@@ -101,7 +101,7 @@ class Experiment():
 
             response = requests.post(self._baseuri+setupExperiment, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             
-            if response.status_code is not 200: raise ValueError("Not a valid post request")
+            if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request")
             responseData = response.json();
             self.experimentId = responseData['jsonNode']['response']['id']
         else:
@@ -221,7 +221,7 @@ class Experiment():
             retval = False
 
             response = requests.post(self._baseuri+postLogUrl+"/"+self.experimentId, data = data, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
-            if response.status_code == 200:
+            if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
                 retval = True
             else:
                 raise RuntimeError("Status code: ", response.status_code)
@@ -304,7 +304,7 @@ class Experiment():
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}});
 
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
-            if response.status_code == 200:
+            if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
                 responseData = response.json();
                 if responseData['statusCode'] == 202:
                     jobIds = responseData['jsonNode']['created']+responseData['jsonNode']['duplicate']
@@ -312,10 +312,11 @@ class Experiment():
                     message = responseData['message']
                     raise RuntimeError(message)
             else:
+                print(response.status_code, self._baseuri+postJobUrl)
                 self._postBulkAttempts -= 1
                 if self._postBulkAttempts > 0:
-                    print(time.time(), "Post bulk job failed. Retrying in 10 seconds")
-                    time.sleep(10)
+                    print(time.time(), "Post bulk job failed. Retrying in 90 seconds")
+                    time.sleep(90)
                     self._postBulkJobs(jobs, seeds = seeds)
                 else:
                     raise RuntimeError("Post bulk job failed final time")
