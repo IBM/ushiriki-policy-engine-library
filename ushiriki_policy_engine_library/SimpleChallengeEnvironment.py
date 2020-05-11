@@ -21,7 +21,7 @@ import random
 import json
 import requests
 
-class ActionSpace(list):
+class mySpace(list):
     def sample(self):
         return random.choice(self)
     
@@ -72,7 +72,8 @@ class ChallengeEnvironment():
         self.history1 = []
         self.reset()
         xy = [(round(x*self._resolution,2),round(y*self._resolution,2)) for x in range(0,int(1/self._resolution) +1,1) for y in range(0,int(1/self._resolution) +1,1)]
-        self.action_space = ActionSpace(xy)
+        self.action_space = mySpace(xy)
+        self.observation_space = mySpace([i for i in range(1,self.policyDimension+1)])
         
     def reset(self):
         """Resets the state and clears all evidence of past actions."""
