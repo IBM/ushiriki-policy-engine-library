@@ -178,8 +178,8 @@ class EvaluateAugmentedChallengeSubmission():
         submission_file = pd.concat([pd.DataFrame(data),pd.DataFrame(data2)] , ignore_index=True)
         submission_file.to_csv(self.filename, index=False)
 
-        class EvaluateAugmentedChallengeGymSubmission():
-    """
+    class EvaluateAugmentedChallengeGymSubmission():
+        """
         A class which defines how the Challenge submissions are to be evaluated.
         
         Attributes:
