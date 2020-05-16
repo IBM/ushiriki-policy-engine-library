@@ -178,16 +178,16 @@ class EvaluateAugmentedChallengeSubmission():
         submission_file = pd.concat([pd.DataFrame(data),pd.DataFrame(data2)] , ignore_index=True)
         submission_file.to_csv(self.filename, index=False)
 
-        class EvaluateAugmentedChallengeGymSubmission():
+class EvaluateAugmentedChallengeGymSubmission():
     """
-        A class which defines how the Challenge submissions are to be evaluated.
-        
-        Attributes:
-        environment (object): The environment used to assess the performence of the selected policies and actions.
-        agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
-        episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
-        
-        """
+    A class which defines how the Challenge submissions are to be evaluated.
+
+    Attributes:
+    environment (object): The environment used to assess the performence of the selected policies and actions.
+    agent (object): The agent class which learns from the environment, and develops optimal (or at least good) policies/actions.
+    episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
+
+    """
     def __init__(self, environment, agent, filename = 'my_submission.csv', episode_number = 20):
         """
             The constructor for evaluation class.
