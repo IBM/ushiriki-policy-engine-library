@@ -9,5 +9,6 @@ setup(name='ushiriki_policy_engine_library',
       author='Ushiriki Policy Engine Library Developers',
       author_email='malaria.ml.challenge@ke.ibm.com',
       url='https://github.com/IBM/ushiriki-policy-engine-library',
+      install_requires = ["gym"],
       packages=find_packages(),
 )
