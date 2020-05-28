@@ -27,6 +27,13 @@ class ChallengeEnvironment1(ChallengeEnvironment):
 
 This code creates an environment object, and defines a user. Some environments will require additional parameters such as tokens and other optional elements.
 
+If you're interested in an [OpenAI gym](https://github.com/openai/gym) variant of the environment, we've provided two samples.
+
+```python
+import gym 
+env = gym.make("ushiriki_policy_engine_library:ChallengePolicy-v0", userID="61122946-1832-11ea-8d71-362b9e155667")
+```
+
 ## Citation
 
 ```lisp
