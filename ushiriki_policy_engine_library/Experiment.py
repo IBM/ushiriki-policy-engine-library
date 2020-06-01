@@ -107,12 +107,13 @@ class Experiment():
         else:
             self.experimentId = experimentId
 
-    def getJobReward(self, jobId):
+    def getJobState(self, jobId):
         """
-            The function to poll the rewards for a given job, assuming that the job is complete.
+            The function to poll all the rewards for a given job, assuming that the job is complete.
             
             Parameters:
             jobId (string): The ID of the job that is to be queried.
+            rewardType (string or list): The reward type(s) that the user would like returned. Default is the one defined with the experiment
             
             Returns:
             value: A dictionary containing all of the rewards associated with the provided jobId or None if the job is not complete.
@@ -125,12 +126,34 @@ class Experiment():
         try:
             response = requests.post(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
-            indicies = sorted([i for i in responseData['jsonNode']['allRewards'][self.rewardType].keys()])
-            datatype = type(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])])
+            value = responseData['jsonNode']['allRewards']
+        except Exception as e:
+            print(e, time.time());
+            value = None
+        return value
+
+    def getJobReward(self, jobId):
+        """
+            The function to poll the rewards for a given job, assuming that the job is complete.
+            
+            Parameters:
+            jobId (string): The ID of the job that is to be queried.
+            
+            Returns:
+            value: A dictionary containing all of the rewards associated with the provided jobId or None if the job is not complete.
+            
+            """
+        
+        try:
+            responseData = self.getJobState(jobId);
+            if responseData == None: return None
+            
+            indicies = sorted([i for i in responseData[self.rewardType].keys()])
+            datatype = type(responseData[self.rewardType][str(indicies[-1])])
             if datatype == list:
-                value = float(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])][0])
+                value = float(responseData[self.rewardType][str(indicies[-1])][0])
             elif datatype is float:
-                value = float(responseData['jsonNode']['allRewards'][self.rewardType][str(indicies[-1])])
+                value = float(responseData[self.rewardType][str(indicies[-1])])
             else:
                 value = None
         except Exception as e:
