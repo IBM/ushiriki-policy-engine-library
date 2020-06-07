@@ -266,7 +266,7 @@ class Experiment():
             """
         postJobUrl='/api/v1/experiments/postJob'
         jobId = None
-        intervention_names=['ITN', 'IRS', 'GVI', 'NPI', 'PI', 'T', 'VNC', 'VEC']
+        intervention_names=['ITN', 'IRS', 'GVI', 'NPI', 'PI', 'T', 'VNC', 'VEC', "Deltap"]
 
         if seed is None:
             seed = random.randint(0,100)
@@ -307,7 +307,7 @@ class Experiment():
             """
         postJobUrl='/api/v1/experiments/postBulkJobs'
         jobIds = None
-        intervention_names=['ITN', 'IRS', 'GVI', 'NPI', 'PI', 'T', 'VNC', 'VEC']
+        intervention_names=['ITN', 'IRS', 'GVI', 'NPI', 'PI', 'T', 'VNC', 'VEC', "Deltap"]
         
         if (type(jobs) is list or type(jobs) is np.ndarray) and seeds is None:
             seeds = []
