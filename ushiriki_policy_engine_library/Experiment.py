@@ -126,7 +126,7 @@ class Experiment():
         if self.getJobStatus(jobId) is False:
             return None
         try:
-            response = requests.post(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+            response = requests.get(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
             value = responseData['jsonNode']['allRewards']
         except Exception as e:
