@@ -91,12 +91,8 @@ class Experiment():
             data = dict([])
             data["actionRangeList"]=actionRangeList
             data["algorithmId"] = "string"
-#            data["exp_type"] = "string"
             data["scenarioId"] = self._scenarioId
             data["resolution"] = self._resolution
-#            data["resourceExperiment"] = "string"
-#            data["status"] = self.status
-#            data["timestamp"] = self._timestamp
             data["userId"] = self._userId
 
             try:
