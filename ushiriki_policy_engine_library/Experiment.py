@@ -91,18 +91,24 @@ class Experiment():
             data = dict([])
             data["actionRangeList"]=actionRangeList
             data["algorithmId"] = "string"
-            data["exp_type"] = "string"
+#            data["exp_type"] = "string"
             data["scenarioId"] = self._scenarioId
             data["resolution"] = self._resolution
-            data["resourceExperiment"] = "string"
-            data["status"] = self.status
-            data["timestamp"] = self._timestamp
+#            data["resourceExperiment"] = "string"
+#            data["status"] = self.status
+#            data["timestamp"] = self._timestamp
             data["userId"] = self._userId
 
-            response = requests.post(self._baseuri+setupExperiment, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
-            
-            if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request")
+            try:
+                response = requests.post(self._baseuri+setupExperiment, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+            except Exception as e:
+                print(e, time.time());
+
+            print(data,response.status_code)
             responseData = response.json();
+            
+            if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request"+responseData['message'])
+            
             self.experimentId = responseData['jsonNode']['response']['id']
         else:
             self.experimentId = experimentId
