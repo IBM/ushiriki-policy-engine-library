@@ -44,7 +44,7 @@ class Experiment():
             status (boolean): Are all posted jobs known to be completed.
 
         """
-    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], scenarioId = "abcd123", resolution = "test", timeout = 0, realworkercount = 1, experimentId = None, rewardType = 'cpda'):
+    def __init__(self, baseuri, apiKey, userId, experimentCount = 100, actionRangeList=[], scenarioId = "abcd123", resolution = "test", algorithmId="70677ace-38dd-4166-b884-f884c41cb409", timeout = 0, realworkercount = 1, experimentId = None, rewardType = 'cpda'):
         """
         The constructor for experiment class. If the class is being intialized with an existing experiment
         
@@ -55,6 +55,7 @@ class Experiment():
         experimentCount (int): The experiment budget (the number of jobs permitted) for this experiment.
         actionRangeList (list): The list of potential actions and the ranges which are in scope for jobs in this experiment.
         scenarioId (string): The scenarioId for all jobs in this experiment. Must be valid, and should have at least one reward function.
+        algorithmId (string): The algorithmId for all jobs in this experiment. Must be valid.
         resolution (string): The population size for the selected scenario. May not be valid for all locations.
         timeout (int): The time interval in seconds that any job can be polled.
         realworkercount  (int): The number of jobs which can concurrently be active.
@@ -78,6 +79,7 @@ class Experiment():
         self.policyDimension = 2
         self._baseuri =  baseuri
         self._scenarioId = scenarioId
+        self._algorithmId = algorithmId
         self._userId = userId
         self._experimentCount = experimentCount
         self._postBulkAttempts = 3
@@ -90,7 +92,7 @@ class Experiment():
         if experimentId == None:
             data = dict([])
             data["actionRangeList"]=actionRangeList
-            data["algorithmId"] = "string"
+            data["algorithmId"] = self._algorithmId
             data["scenarioId"] = self._scenarioId
             data["resolution"] = self._resolution
             data["userId"] = self._userId
