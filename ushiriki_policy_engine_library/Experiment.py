@@ -106,7 +106,6 @@ class Experiment():
             responseData = response.json();
             
             if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request"+responseData['message'])
-            print(responseData)
             self.experimentId = responseData['jsonNode']['id']
         else:
             self.experimentId = experimentId
