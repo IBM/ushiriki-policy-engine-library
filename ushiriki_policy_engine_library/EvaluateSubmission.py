@@ -142,6 +142,7 @@ class EvaluateAugmentedChallengeSubmission():
             self.policies.append(finalpolicy)
             self.rewards.append(episodicreward)
             self.run.append(ii)
+        print(self.rewards)
         self.score = np.median(self.rewards)
         return self.score
 

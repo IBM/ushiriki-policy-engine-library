@@ -130,7 +130,11 @@ class Experiment():
         try:
             response = requests.get(self._baseuri+getJobRewardUrl%jobId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             responseData = response.json()
-            value = responseData['jsonNode']['allRewards']
+            rawExpState = responseData['jsonNode']['rewardEntry']
+            value = {}
+            v = {i['rewardType']:i['entries'] for i in rawExpState}
+            for key in v.keys():
+                value[key] = {item['timestep']:[float(item['entry'])] for item in v[key]}
         except Exception as e:
             print(e, time.time());
             value = None
@@ -329,7 +333,6 @@ class Experiment():
                     basetime= datetime.strptime(intervention[3],'%Y-%m-%d')
                     interventionlist.append( {"modelName":intervention_names[int(intervention[0])],"coverage":intervention[2], "time":"%s"%intervention[3]} )
                 data.append({"actions":interventionlist, "experimentId": self.experimentId, "jobSeeds": {str(seed):""}});
-
             response = requests.post(self._baseuri+postJobUrl, data = json.dumps(data), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
             if response.status_code == 200 or response.status_code == 201 or response.status_code == 202:
                 responseData = response.json();
