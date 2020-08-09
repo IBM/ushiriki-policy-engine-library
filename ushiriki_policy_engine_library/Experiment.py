@@ -70,6 +70,7 @@ class Experiment():
         """
             
         setupExperiment = '/api/v1/experiments/setupExperiment'
+        viewScenarios = '/api/v1/scenarios/view'
         
         self._resolution = resolution
         self._timeout = timeout
@@ -104,6 +105,15 @@ class Experiment():
             if response.status_code is not 200 and response.status_code is not 201: raise ValueError("Not a valid post request")
             responseData = response.json();
             self.experimentId = responseData['jsonNode']['response']['id']
+            
+            try:
+                response = requests.get(self._baseuri+viewScenarios+"/%s"%self._scenarioId, headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self._apiKey});
+                responseData = response.json()['data']['XMLinStringFormat'] ;
+                self._scenario = json.loads(responseData)
+            except Exception as e:
+                print(e, time.time());
+
+                
         else:
             self.experimentId = experimentId
 
