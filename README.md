@@ -37,10 +37,19 @@ env = gym.make("ushiriki_policy_engine_library:ChallengePolicy-v0", userID="6112
 ## Citation
 
 ```lisp
-@misc{pending,
-  Author = {Sekou L Remy and Oliver E Bent},
-  Title = {A Global Health Gym Environment for RL Applications},
-  Year = {2020},
-  Eprint = {arXiv:pending},
-}
+    
+ @InProceedings{pmlr-v123-remy20a, 
+     title = {A Global Health Gym Environment for RL Applications}, 
+     author = {Remy, Sekou L. and Bent, Oliver}, 
+     pages = {253--261}, 
+     year = {2020}, 
+     editor = {Hugo Jair Escalante and Raia Hadselll}, 
+     volume = {123}, 
+     series = {Proceedings of Machine Learning Research}, 
+     address = {Vancouver, CA}, 
+     month = {08--14 Dec}, 
+     publisher = {PMLR}, 
+     pdf = {http://proceedings.mlr.press/v123/remy20a/remy20a.pdf}, 
+     url = {http://proceedings.mlr.press/v123/remy20a.html}
+ } 
 ```
