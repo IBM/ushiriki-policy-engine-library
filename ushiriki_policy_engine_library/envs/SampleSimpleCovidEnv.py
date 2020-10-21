@@ -10,7 +10,7 @@ class CovidChallengeCalibrationEnv(gym.Env):
         self.window = numdays
         self.max_pop = maxpop
         self.duration = duration
-        self.action_space = gym.spaces.Box(low=np.array(low), high=np.array(high), dtype=float)
+        self.action_space = gym.spaces.Box(low=gym.spaces.utils.np.array(low), high=gym.spaces.utils.np.array(high), dtype=float)
         self.observation_space = gym.spaces.Box(low=0, high=self.max_pop, shape=(len(self.statedata),), dtype=float)
         self.parms = pd.read_json(base_data)
         self.N =  self.parms["population"]
