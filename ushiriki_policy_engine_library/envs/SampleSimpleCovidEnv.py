@@ -48,7 +48,6 @@ class CovidChallengeCalibrationEnv(gym.Env):
             self.parms["alphabeta"] = action[0]
             self.parms["gamma"] = action[1]
             self.parms["d0"] = action[2]
-            str({i:df[i][0] for i in df.columns}).replace("'","\"").replace("nan", "null")
             response = requests.post(self.uri, data= str({i:self.parms[i][0] for i in self.parms}).replace("'","\"").replace("nan", "null"), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.token, 'userID':self.userID})
             results = response.json()['data']
             self.states = np.array([[i['susceptible'],i['infectious'],i['recovered'],i['deaths']] for i in results])
