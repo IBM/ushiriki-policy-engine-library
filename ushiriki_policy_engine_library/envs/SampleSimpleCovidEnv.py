@@ -50,17 +50,17 @@ class CovidChallengeCalibrationEnv(gym.Env):
             self.parms["d0"] = action[2]
             response = requests.post(self.uri, data= str({i:self.parms[i][0] for i in self.parms}).replace("'","\"").replace("nan", "null"), headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'token':self.token, 'userID':self.userID})
             results = response.json()['data']
-            self.states = np.array([[i['susceptible'],i['infectious'],i['recovered'],i['deaths']] for i in results])
+            self.states = gym.spaces.utils.np.array([[i['susceptible'],i['infectious'],i['recovered'],i['deaths']] for i in results])
             numcases = self.states[:,1]
             numdeaths = self.states[:,3]
             numrecovered = self.states[:,2]
-            output0 = np.array(self.output0)
-            output1 = np.array(self.output1)
-            output2 = np.array(self.output2)
+            output0 = gym.spaces.utils.np.array(self.output0)
+            output1 = gym.spaces.utils.np.array(self.output1)
+            output2 = gym.spaces.utils.np.array(self.output2)
             subtr_cases=numcases-output0
             subtr_deaths=numdeaths-output1
             subtr_recovered=numrecovered-output2
-            reward = - np.sqrt(np.sum(subtr_cases*subtr_cases.T) +np.sum(subtr_deaths*subtr_deaths.T) +np.sum(subtr_recovered*subtr_recovered.T))
+            reward = - gym.spaces.utils.np.sqrt(gym.spaces.utils.np.sum(subtr_cases*subtr_cases.T) +gym.spaces.utils.np.sum(subtr_deaths*subtr_deaths.T) +gym.spaces.utils.np.sum(subtr_recovered*subtr_recovered.T))
             self.rewards.append(reward)
 
         done = True
