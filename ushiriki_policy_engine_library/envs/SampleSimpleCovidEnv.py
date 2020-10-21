@@ -1,5 +1,6 @@
 import gym
 import requests
+import pandas as pd
 
 class CovidChallengeCalibrationEnv(gym.Env):
     def __init__(self, baseuri="https://reward-service.eu-gb.mybluemix.net", userID="61122946-1832-11ea-ssss-github", base_data="calibration_input.json", driver_data="casesdata.csv", numdays = 14, duration = 180, maxpop = 10000000.0, low=[0,0,0], high=[1,1,1], token = None):
