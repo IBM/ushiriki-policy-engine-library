@@ -321,6 +321,8 @@ class EvaluateAugmentedGymSubmission():
             e = copy.deepcopy(self.environment)
             a = self.agent(LoggerWrapper(e), self.episode_number);
             finalpolicy, episodicreward = a.generate()
+            if type(episodicreward) is list:
+                finalpolicy, episodicreward = finalpolicy[-1], episodicreward[-1]
             self.allrewards.append([np.sum([i[2] for i in episodes]) for episodes in a.environment.episodes])
             self.allstateactions.append([[i[0:2] for i in episodes] for episodes in a.environment.episodes])
             self.policies.append(finalpolicy)
