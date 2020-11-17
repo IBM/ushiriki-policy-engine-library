@@ -17,6 +17,29 @@
 import pandas as pd
 import numpy as np
 import itertools
+import gym
+
+class LoggerWrapper(gym.Wrapper):
+    '''
+        
+    '''
+    def __init__(self, env, scale = 1):
+        super().__init__(env)
+        self.env = env
+        self.episodes = []
+        self.episode = []
+        self.reset()
+
+    def reset(self):
+        return self.env.reset()
+
+    def step(self, act):
+        ob, reward, done, info = self.env.step(act)
+        self.episode.append((ob, act, reward, done))
+        if done:
+            self.episodes.append(self.episode)
+            self.episode = []
+        return ob, reward, done, info
 
 class EvaluateChallengeSubmission():
     """
@@ -189,7 +212,7 @@ class EvaluateAugmentedChallengeGymSubmission():
     episode_number (int): The number of episodes used during the training process. DO NOT CHANGE.
 
     """
-    def __init__(self, environment, agent, filename = 'my_submission.csv', episode_number = 20):
+    def __init__(self, environment, agent, filename = 'my_submission.csv', episode_number = 1000):
         """
             The constructor for evaluation class.
             
