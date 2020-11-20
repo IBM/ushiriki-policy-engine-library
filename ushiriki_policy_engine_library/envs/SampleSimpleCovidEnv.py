@@ -101,7 +101,7 @@ class CovidChallengeActionEnv(gym.Env):
         done = False
         reward = None
         d_index = None
-        daly_no_int = [1466.1046838272644, 9697.58942050062, 139390.15246020205, 321081.7712880046, 272332.84228178376, 201109.69224554516, 146651.1105907854, 106746.15568627982, 77667.56472501424, 56502.798758294084, 41103.348691877036, 29900.15913014504, 21750.233887881623]
+        daly_no_int = [1464.9297629786774, 9273.788068402077, 92408.22192626673, 150539.6266037019, 120077.84028811468, 88207.69033717741, 64280.071878892995, 46782.87922640833, 34037.5707347189, 24761.85578834993, 18013.084872795735, 13103.380010518304, 9531.764237564494]
         assert self.action_space.contains(action), "Invalid action: %s"%action
         if len(self.states) <= self.duration:
             self.actions.append(action)
@@ -117,7 +117,7 @@ class CovidChallengeActionEnv(gym.Env):
             if len(self.rewards) == 0:
                 # reward = - self.states[-1][1] - (99-action)*(self.states[-1][0])/5000
                 daly = self.states[-1][3] * 10 + (0.81*0.051+0.14*0.133+0.05*0.655)*self.window/365 * self.states[-1][1]
-                cost = 0.5*(99-action)*(self.states[-1][0] + self.states[-1][2])*25
+                cost = (99-action)*(self.states[-1][0] + self.states[-1][2])*14.2
                 daly_averted = daly_no_int[d_index] - daly
                 #societal_cost = cost+daly*100000
                 societal_cost = daly_averted*100000 - cost
@@ -127,7 +127,7 @@ class CovidChallengeActionEnv(gym.Env):
                 numdeaths=np.cumsum(np.diff([i[3] for i in self.states]).clip(0))
                 # reward = (numcases[-self.window] - numcases[-1]) - (99-action)*(self.states[-1][0])/5000
                 daly = (numdeaths[-1]-numdeaths[-self.window]) * 10 + (0.81*0.051+0.14*0.133+0.05*0.655)*self.window/365 * (numcases[-1]-numcases[-self.window])
-                cost = 0.5*(99-action)*(self.states[-1][0] + self.states[-1][2])*25
+                cost = (99-action)*(self.states[-1][0] + self.states[-1][2])*14.2
                 daly_averted = daly_no_int[d_index] - daly
                 #societal_cost = cost+daly*100000
                 societal_cost = daly_averted*100000 - cost
