@@ -125,7 +125,7 @@ class SimpleMalariaActionEnv(gym.Env):
         except Exception as e:
             print(e);
             reward = float('nan')
-        return -reward
+        return reward
 
     def step(self, action):
         """
@@ -242,7 +242,7 @@ class SimpleMalariaPolicyEnv(gym.Env):
         except Exception as e:
             print(e);
             reward = float('nan')
-        return -reward
+        return reward
 
     def step(self, policy):
         """
