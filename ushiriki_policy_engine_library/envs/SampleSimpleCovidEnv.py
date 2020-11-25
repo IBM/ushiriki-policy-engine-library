@@ -121,7 +121,7 @@ class CovidChallengeActionEnv(gym.Env):
                 daly_averted = daly_no_int[d_index] - daly
                 #societal_cost = cost+daly*100000
                 societal_cost = daly_averted*100000 - cost
-                reward = -societal_cost/self.N
+                reward = societal_cost/self.N
             else:
                 numcases=np.cumsum(np.diff([i[1] for i in self.states]).clip(0))
                 numdeaths=np.cumsum(np.diff([i[3] for i in self.states]).clip(0))
@@ -131,7 +131,7 @@ class CovidChallengeActionEnv(gym.Env):
                 daly_averted = daly_no_int[d_index] - daly
                 #societal_cost = cost+daly*100000
                 societal_cost = daly_averted*100000 - cost
-                reward = -societal_cost/self.N
+                reward = societal_cost/self.N
             self.rewards.append(reward)
                         
         if len(self.states) >= self.duration or self.states[-1][1] >= self.max_pop:
