@@ -5,7 +5,7 @@ import numpy as np
 
 class CovidChallengeCalibrationEnv(gym.Env):
     def __init__(self, baseuri="https://reward-service.eu-gb.mybluemix.net/covid19modelv1", userID="61122946-1832-11ea-ssss-github", base_data="calibration_input.json", driver_data="casesdata.csv", numdays = 14, duration = 180, maxpop = 10000000.0, low=[0,0,0], high=[1,1,1], token = None):
-        self.uri = baseuri+"/evaluate/policy/"
+        self.uri = baseuri.strip("/")+"/evaluate/policy/"
         self.token = token
         self.userID = userID
         self.statedata = ["ds", "di", "dr", "dd"]
@@ -72,7 +72,7 @@ class CovidChallengeCalibrationEnv(gym.Env):
 
 class CovidChallengeActionEnv(gym.Env):
     def __init__(self, baseuri="https://reward-service.eu-gb.mybluemix.net/covid19modelv1", userID="61122946-1832-11ea-ssss-github", base_data="https://gist.githubusercontent.com/slremy/fad09f9224a885fa460415cb4940fbd6/raw/dc48f0be9e94e5d277b47f8a42008e903547a405/birnin_zana.json", numdays = 14, duration = 180, maxpop = 10000000.0, low=[0,0,0], high=[1,1,1], token = None):
-        self.uri = baseuri+"/evaluate/policy/"
+        self.uri = baseuri.strip("/")+"/evaluate/policy/"
         self.token = token
         self.userID = userID
         self.statedata = ["ds", "di", "dr", "dd"]
