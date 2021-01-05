@@ -21,7 +21,9 @@ class CovidChallengeCalibrationEnv(gym.Env):
         self.output1 = casedata_['deaths'].tolist()
         self.output2 = casedata_['recovered'].tolist()
         if "susceptible" in casedata_.keys(): 
-            self.parms.at[0,"susceptible"] = casedata_['susceptible'].tolist()[0] 
+            self.output3 = casedata_['susceptible'].tolist()
+            self.parms.at[0,"susceptible"] = self.output3[0] 
+            
         self.parms["Deltap"]= [casedata_['100-wits_si'].tolist() for _ in self.parms.index]
         assert len(self.parms["Deltap"][0]) == len(self.output0), "Output0 length does not match the length of the model driver"
         assert len(self.parms["Deltap"][0]) == len(self.output1), "Output1 length does not match the length of the model driver"
