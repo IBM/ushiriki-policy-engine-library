@@ -600,8 +600,8 @@ class Model1Env_beta(gym.Env):
         self.states = np.array([[i['susceptible'],i['infectious'],i['recovered'],i['deaths']] for i in results])
 
 
-        model_data = np.array([self.states[-self.window+len(tmp["beta"]):len(tmp["beta"]),1:].sum(axis=1), self.states[-self.window+len(tmp["beta"]):len(tmp["beta"]),3]]).T
-        real_data = np.array([np.array(self.output0[-self.window+len(tmp["beta"]):len(tmp["beta"])]), self.output1[-self.window+len(tmp["beta"]):len(tmp["beta"])]]).T
+        model_data = np.array([self.states[-self.window:,1:].sum(axis=1), self.states[-self.window:,3]]).T
+        real_data = np.array([np.array(self.output0[-self.window:]), self.output1[-self.window:]]).T
 
         se = (real_data-model_data)**2
         reward = - np.mean(np.sqrt(np.mean(se, axis=0))/(np.amax(real_data, axis=0)-np.amin(real_data, axis=0)+.00001))
